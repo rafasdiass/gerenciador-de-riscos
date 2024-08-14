@@ -1,0 +1,28 @@
+<div class="container mt-4">
+  <div class="page-title-container mb-4 text-center">
+    <h2 class="page-title">Estratégia Martingale</h2>
+  </div>
+
+  <!-- Configurações da Estratégia -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+      <i class="bi bi-gear-fill me-2"></i>
+      <h5 class="mb-0">Configurações da Estratégia</h5>
+    </div>
+    <div class="card-body bg-light">
+      <div class="row">
+        <div class="col-md-4">
+          <label class="form-label">Valor Inicial (R$)</label>
+          <p class="form-control-plaintext">{{ initialAmount | currency:'BRL' }}</p>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Payout (%)</label>
+          <p class="form-control-plaintext">{{ payout }}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exibe as entradas da estratégia Martingale -->
+  <app-daily-operations [operations]="entries"></app-daily-operations>
+</div>

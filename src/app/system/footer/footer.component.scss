@@ -1,0 +1,17 @@
+footer {
+    background-color: #343a40; // Bootstrap dark color
+    color: white;
+  
+    a {
+      color: white;
+  
+      &:hover {
+        color: #adb5bd; // Bootstrap light grey color
+      }
+    }
+  
+    .bi {
+      margin-right: 8px;
+    }
+  }
+  

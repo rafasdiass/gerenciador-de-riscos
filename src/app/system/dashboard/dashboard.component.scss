@@ -1,0 +1,107 @@
+.container {
+    margin: 0 auto;
+    padding: 15px;
+    max-width: 1200px;
+  
+    .card {
+      &.shadow-sm {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+      }
+  
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: bold;
+        font-size: 1.5rem;
+        padding: 1rem;
+        border-radius: 0.75rem 0.75rem 0 0;
+  
+        i {
+          font-size: 2rem;
+          margin-right: 10px;
+        }
+      }
+  
+      .card-body {
+        background-color: #f0f4f7;
+        border-radius: 0 0 0.75rem 0.75rem;
+        padding: 1.5rem;
+  
+        .form-label {
+          font-weight: bold;
+          font-size: 1.2rem;
+          color: #555;
+        }
+  
+        .fw-bold {
+          font-weight: bold;
+          font-size: 1.2rem;
+          color: #333;
+        }
+  
+        .display-6 {
+          font-size: 2rem;
+          margin-bottom: 0;
+          color: #333;
+        }
+  
+        input[type="text"] {
+          border: 2px solid #ced4da;
+          border-radius: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          font-size: 1rem;
+          &:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+          }
+        }
+  
+        .btn-primary {
+          background-color: #007bff;
+          border-color: #007bff;
+          font-weight: bold;
+          padding: 0.75rem 1.25rem;
+          border-radius: 0.5rem;
+          &:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+          }
+        }
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .card-header {
+        font-size: 1.25rem;
+        i {
+          font-size: 1.75rem;
+        }
+      }
+  
+      .card-body {
+        .display-6 {
+          font-size: 1.75rem;
+        }
+      }
+    }
+  
+    @media (max-width: 576px) {
+      .card-header {
+        font-size: 1rem;
+        i {
+          font-size: 1.5rem;
+        }
+      }
+  
+      .card-body {
+        padding: 1rem;
+  
+        .display-6 {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+  

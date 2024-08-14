@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid justify-content-between">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-house-door-fill me-2"></i>
+      <span class="navbar-brand mb-0 h1">Gerenciador de Riscos</span>
+    </div>
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="toggleMenu()"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse"
+      [ngClass]="{ show: isMenuToggled() }"
+      id="navbarNav"
+    >
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-auto">
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateTo('/home', $event)" href="#">
+            <i class="bi bi-house"></i> Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateTo('/dashboard', $event)" href="#">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateTo('/operations', $event)" href="#">
+            <i class="bi bi-currency-exchange"></i> Operações
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateTo('/settings', $event)" href="#">
+            <i class="bi bi-gear-fill"></i> Configurações
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateTo('/history', $event)" href="#">
+            <i class="bi bi-journal-text"></i> Histórico
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

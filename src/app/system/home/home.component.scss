@@ -1,0 +1,117 @@
+/* Estilos gerais */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+  }
+  
+  .overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 3rem;
+  }
+  
+  .hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+  }
+  
+  .hero-section p {
+    font-size: 1.5rem;
+  }
+  
+  .hero-section .btn {
+    font-size: 1.2rem;
+    padding: 0.75rem 2rem;
+  }
+  
+  /* Cards */
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border-radius: 0.5rem;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-body i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .card-text {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+  
+  /* Destaques do Sistema */
+  .container h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  .container .row .col-md-4 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .container .row .col-md-4 i {
+    font-size: 3.5rem;
+    color: #007bff;
+  }
+  
+  .container .row .col-md-4 h5 {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #343a40;
+  }
+  
+  .container .row .col-md-4 p {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .hero-section h1 {
+      font-size: 2.5rem;
+    }
+  
+    .hero-section p {
+      font-size: 1.2rem;
+    }
+  
+    .card-body i {
+      font-size: 2.5rem;
+    }
+  
+    .container h2 {
+      font-size: 2rem;
+    }
+  
+    .container .row .col-md-4 i {
+      font-size: 3rem;
+    }
+  
+    .container .row .col-md-4 h5 {
+      font-size: 1.25rem;
+    }
+  }
+  
