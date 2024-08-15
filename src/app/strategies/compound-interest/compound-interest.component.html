@@ -1,26 +1,33 @@
-<div class="compound-interest-container">
-  <h2>Cálculo de Juros Compostos</h2>
-  
-  <form (ngSubmit)="calculate()">
-    <div class="form-group">
-      <label for="initialAmount">Valor Inicial:</label>
-      <input type="number" id="initialAmount" [value]="initialAmount" class="form-control" readonly />
+<div class="container mt-4">
+  <div class="page-title-container mb-4 text-center">
+    <h2 class="page-title">Cálculo de Juros Compostos</h2>
+  </div>
+
+  <!-- Exibe os valores calculados -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+      <i class="bi bi-gear-fill me-2"></i>
+      <h5 class="mb-0">Configurações da Estratégia</h5>
     </div>
-
-    <div class="form-group">
-      <label for="interestRate">Taxa de Juros (%):</label>
-      <input type="number" id="interestRate" [(ngModel)]="interestRate" name="interestRate" class="form-control" required />
+    <div class="card-body bg-light">
+      <div class="row">
+        <div class="col-md-4">
+          <label class="form-label">Valor Inicial (R$)</label>
+          <p class="form-control-plaintext">{{ initialAmount | currency:'BRL' }}</p>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Taxa de Juros (%)</label>
+          <p class="form-control-plaintext">{{ interestRate }}%</p>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Períodos</label>
+          <p class="form-control-plaintext">{{ periods }}</p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="form-group">
-      <label for="periods">Períodos:</label>
-      <input type="number" id="periods" [(ngModel)]="periods" name="periods" class="form-control" required />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Calcular</button>
-  </form>
-
-  <div *ngIf="finalAmount !== undefined" class="result-container">
-    <h3>Valor Final: {{ finalAmount | currency }}</h3>
+  <div *ngIf="finalAmount !== undefined" class="result-container mt-4 text-center">
+    <h3>Valor Final: {{ finalAmount | currency:'BRL' }}</h3>
   </div>
 </div>

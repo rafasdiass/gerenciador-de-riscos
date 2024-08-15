@@ -20,19 +20,38 @@ export class CompoundInterestComponent implements OnInit {
   constructor(private strategyService: StrategyService, private operationService: OperationService) {}
 
   ngOnInit(): void {
-    this.loadSettings();
+    this.loadSettingsAndCalculate();
   }
 
-  loadSettings(): void {
+  loadSettingsAndCalculate(): void {
     this.operationService.initialBalance$.subscribe(balance => {
       this.initialAmount = balance;
+      this.calculateCompoundInterest();
+    });
+
+    this.operationService.riskAmount$.subscribe(riskAmount => {
+      this.interestRate = (riskAmount / this.initialAmount) * 100;
+      this.calculateCompoundInterest();
+    });
+
+    this.operationService.payout$.subscribe(payout => {
+      this.periods = payout; // Supondo que os períodos sejam derivados do payout ou outra lógica
+      this.calculateCompoundInterest();
     });
   }
 
-  calculate(): void {
-    this.strategyService.calculateCompoundInterest(this.initialAmount, this.interestRate, this.periods)
-      .subscribe(result => {
-        this.finalAmount = result;
-      });
+  calculateCompoundInterest(): void {
+    if (this.initialAmount && this.interestRate && this.periods) {
+      this.strategyService.calculateCompoundInterest(this.initialAmount, this.interestRate, this.periods)
+        .subscribe({
+          next: result => {
+            this.finalAmount = result;
+          },
+          error: err => {
+            console.error('Error calculating compound interest:', err);
+            // Lide com erros específicos aqui
+          }
+        });
+    }
   }
 }

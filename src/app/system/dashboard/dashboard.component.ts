@@ -15,12 +15,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class DashboardComponent implements OnInit {
   initialBalance!: number;
-  riskPercentage!: number; // Percentual de risco
+  riskPercentage!: number;
   payout!: number;
   currentBalance!: number;
   growth: number = 0;
-  balanceColor: string = 'text-dark';  // Classe CSS para a cor do texto
-  balanceIcon: string = ''; // Classe CSS para o ícone de crescimento/perda
+  balanceColor: string = 'text-dark';
+  balanceIcon: string = '';
 
   constructor(
     private operationService: OperationService,
@@ -45,13 +45,13 @@ export class DashboardComponent implements OnInit {
 
   updateInitialBalance(): void {
     this.operationService.setInitialBalance(this.initialBalance);
-    this.updateRiskAmount(); // Recalcula o valor arriscado baseado no novo saldo
+    this.updateRiskAmount();
     this.updateBalanceColor();
   }
 
   updateRiskAmount(): void {
     const riskAmount = (this.initialBalance * this.riskPercentage) / 100;
-    this.operationService.setRiskAmount(riskAmount); // Atualiza o valor a ser arriscado
+    this.operationService.setRiskAmount(riskAmount);
   }
 
   saveSettings(): void {

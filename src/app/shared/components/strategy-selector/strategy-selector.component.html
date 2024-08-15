@@ -1,8 +1,12 @@
-<div class="strategy-selector">
-  <label for="strategy">Selecione uma Estratégia:</label>
-  <select id="strategy" (change)="selectStrategy($event)">
-    <option *ngFor="let strategy of strategies" [value]="strategy.name">
-      {{ strategy.name }}
-    </option>
-  </select>
+<div class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <div class="form-group">
+      <label for="strategy" class="form-label">Selecione uma Estratégia:</label>
+      <select id="strategy" class="form-select" (change)="selectStrategy($event)">
+        <option *ngFor="let strategy of strategies" [value]="strategy.name">
+          {{ strategy.name }}
+        </option>
+      </select>
+    </div>
+  </div>
 </div>

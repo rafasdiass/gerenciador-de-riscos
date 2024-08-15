@@ -4,6 +4,7 @@ import { StrategyService } from '../../../shared/services/strategy.service';
 import { OperationService } from '../../../shared/services/operation.service';
 
 interface Operation {
+  round: number;
   bet: number;
   profit: number;
   total: number;
@@ -18,30 +19,68 @@ interface Operation {
   styleUrls: ['./daily-operations.component.scss']
 })
 export class DailyOperationsComponent implements OnInit {
-  @Input() operations: Operation[] = []; // Recebe as operações de um componente de estratégia
+  @Input() selectedStrategy!: string; // Recebe a estratégia selecionada
+  operations: Operation[] = [];
   payout!: number;
+  initialBalance!: number;
 
   constructor(
-    private operationService: OperationService
+    private operationService: OperationService,
+    private strategyService: StrategyService
   ) {}
 
   ngOnInit(): void {
-    this.initializeOperations();
+    this.operationService.initialBalance$.subscribe(balance => {
+      this.initialBalance = balance;
+    });
 
-    // Obter o valor do payout para uso no cálculo
     this.operationService.payout$.subscribe(payout => {
       this.payout = payout;
     });
+
+    this.applyStrategy();
   }
 
-  initializeOperations(): void {
-    if (this.operations.length === 0) {
-      this.operations = Array.from({ length: 3 }, () => ({
-        bet: 0,
-        profit: 0,
-        total: 0
-      }));
+  applyStrategy(): void {
+    if (this.selectedStrategy === 'Martingale') {
+      this.strategyService.calculateMartingale(this.initialBalance, this.payout).subscribe(result => {
+        this.operations = this.createMartingaleEntries(result);
+      });
+    } else if (this.selectedStrategy === 'Juros Compostos') {
+      this.strategyService.calculateCompoundInterest(this.initialBalance, this.payout, 80).subscribe(result => {
+        this.operations = this.createCompoundInterestEntries(result);
+      });
     }
+  }
+
+  private createMartingaleEntries(initialBet: number): Operation[] {
+    let currentBet = initialBet;
+    const payoutPercent = this.payout / 100;
+
+    return Array.from({ length: 3 }, (_, i) => {
+      const profit = currentBet * payoutPercent;
+      const total = currentBet + profit;
+
+      const entry: Operation = {
+        round: i + 1,
+        bet: currentBet,
+        profit,
+        total
+      };
+
+      currentBet *= 2;
+      return entry;
+    });
+  }
+
+  private createCompoundInterestEntries(finalAmount: number): Operation[] {
+    const profit = finalAmount - this.initialBalance;
+    return [{
+      round: 1,
+      bet: this.initialBalance,
+      profit,
+      total: finalAmount
+    }];
   }
 
   markWin(index: number): void {
