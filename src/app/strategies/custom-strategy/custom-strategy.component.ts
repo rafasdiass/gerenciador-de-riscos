@@ -18,7 +18,7 @@ export class CustomStrategyComponent {
   constructor(private strategyService: StrategyService, private operationService: OperationService) {}
 
   calculate(): void {
-    this.strategyService.calculateCustomStrategy(this.parameters)
+    this.strategyService.calculateStrategy<number>('custom-strategy', this.parameters)
       .subscribe(result => {
         this.result = result;
       });

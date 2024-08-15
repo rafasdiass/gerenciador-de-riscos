@@ -43,57 +43,35 @@ export class DailyOperationsComponent implements OnInit {
 
   applyStrategy(): void {
     if (this.selectedStrategy === 'Martingale') {
-      this.strategyService.calculateMartingale(this.initialBalance, this.payout).subscribe(result => {
-        this.operations = this.createMartingaleEntries(result);
-      });
+      this.strategyService.calculateStrategy<Operation[]>('martingale', { initialAmount: this.initialBalance, payoutPercent: this.payout })
+        .subscribe(result => {
+          this.operations = result;
+        });
     } else if (this.selectedStrategy === 'Juros Compostos') {
-      this.strategyService.calculateCompoundInterest(this.initialBalance, this.payout, 80).subscribe(result => {
-        this.operations = this.createCompoundInterestEntries(result);
-      });
+      this.strategyService.calculateStrategy<Operation[]>('compound-interest', { initialAmount: this.initialBalance, interestRate: this.payout, periods: 80 })
+        .subscribe(result => {
+          this.operations = result;
+        });
     }
-  }
-
-  private createMartingaleEntries(initialBet: number): Operation[] {
-    let currentBet = initialBet;
-    const payoutPercent = this.payout / 100;
-
-    return Array.from({ length: 3 }, (_, i) => {
-      const profit = currentBet * payoutPercent;
-      const total = currentBet + profit;
-
-      const entry: Operation = {
-        round: i + 1,
-        bet: currentBet,
-        profit,
-        total
-      };
-
-      currentBet *= 2;
-      return entry;
-    });
-  }
-
-  private createCompoundInterestEntries(finalAmount: number): Operation[] {
-    const profit = finalAmount - this.initialBalance;
-    return [{
-      round: 1,
-      bet: this.initialBalance,
-      profit,
-      total: finalAmount
-    }];
   }
 
   markWin(index: number): void {
     if (this.operations[index]) {
       this.operations[index].win = true;
-      this.updateOperationResult(index, true);
+      this.strategyService.processResult(this.operations[index].bet, this.payout, 'win')
+        .subscribe(() => {
+          this.updateOperationResult(index, true);
+        });
     }
   }
 
   markLoss(index: number): void {
     if (this.operations[index]) {
       this.operations[index].win = false;
-      this.updateOperationResult(index, false);
+      this.strategyService.processResult(this.operations[index].bet, 0, 'loss')
+        .subscribe(() => {
+          this.updateOperationResult(index, false);
+        });
     }
   }
 

@@ -9,34 +9,25 @@ export class StrategyService {
 
   constructor(private apiService: ApiService) {}
 
-  calculateMartingale(initialAmount: number, payoutPercent: number): Observable<number> {
-    return this.apiService.post<number>('strategy/martingale', { initialAmount, payoutPercent });
+  /**
+   * Método genérico para calcular uma estratégia baseada nos parâmetros fornecidos.
+   * @param strategyName - Nome da estratégia (ex: 'martingale', 'compound-interest', etc.)
+   * @param parameters - Objeto contendo os parâmetros da estratégia
+   * @returns - Observable com o resultado do cálculo
+   */
+  calculateStrategy<T>(strategyName: string, parameters: any): Observable<T> {
+    return this.apiService.post<T>(`strategy/${strategyName}`, parameters);
   }
 
-  calculateCompoundInterest(initialAmount: number, interestRate: number, periods: number): Observable<number> {
-    return this.apiService.post<number>('strategy/compound-interest', { initialAmount, interestRate, periods });
-  }
-
-  // Este método foi adicionado como exemplo, mas precisa de um endpoint correspondente no backend
-  calculateSimpleInterest(initialAmount: number, interestRate: number, periods: number): Observable<number> {
-    return this.apiService.post<number>('strategy/simple-interest', { initialAmount, interestRate, periods });
-  }
-
-  calculateSoros(initialAmount: number, payoutPercent: number, rounds: number): Observable<number> {
-    return this.apiService.post<number>('strategy/soros', { initialAmount, payoutPercent, rounds });
-  }
-
-  calculateCustomStrategy(parameters: any): Observable<number> {
-    return this.apiService.post<number>('strategy/custom-strategy', parameters);
-  }
-
-  processWin(bet: number, payout: number): Observable<void> {
-    const winData = { bet, payout, result: 'win' };
-    return this.apiService.post<void>('strategy/process-result', winData);
-  }
-
-  processLoss(bet: number): Observable<void> {
-    const lossData = { bet, result: 'loss' };
-    return this.apiService.post<void>('strategy/process-result', lossData);
+  /**
+   * Método genérico para processar um resultado (win/loss).
+   * @param bet - Valor da aposta
+   * @param payout - Percentual de payout
+   * @param result - Resultado ('win' ou 'loss')
+   * @returns - Observable vazio
+   */
+  processResult(bet: number, payout: number = 0, result: 'win' | 'loss'): Observable<void> {
+    const data = { bet, payout, result };
+    return this.apiService.post<void>('strategy/process-result', data);
   }
 }

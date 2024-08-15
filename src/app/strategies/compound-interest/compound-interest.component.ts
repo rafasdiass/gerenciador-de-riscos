@@ -35,23 +35,25 @@ export class CompoundInterestComponent implements OnInit {
     });
 
     this.operationService.payout$.subscribe(payout => {
-      this.periods = payout; // Supondo que os períodos sejam derivados do payout ou outra lógica
+      this.periods = payout;
       this.calculateCompoundInterest();
     });
   }
 
   calculateCompoundInterest(): void {
     if (this.initialAmount && this.interestRate && this.periods) {
-      this.strategyService.calculateCompoundInterest(this.initialAmount, this.interestRate, this.periods)
-        .subscribe({
-          next: result => {
-            this.finalAmount = result;
-          },
-          error: err => {
-            console.error('Error calculating compound interest:', err);
-            // Lide com erros específicos aqui
-          }
-        });
+      this.strategyService.calculateStrategy<number>('compound-interest', {
+        initialAmount: this.initialAmount,
+        interestRate: this.interestRate,
+        periods: this.periods
+      }).subscribe({
+        next: result => {
+          this.finalAmount = result;
+        },
+        error: err => {
+          console.error('Error calculating compound interest:', err);
+        }
+      });
     }
   }
 }

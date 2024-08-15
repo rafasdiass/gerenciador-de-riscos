@@ -6,7 +6,6 @@ import { StrategyService } from '../../shared/services/strategy.service';
 import { DailyOperationsComponent } from '../../system/operations/daily-operations/daily-operations.component';
 import { SimpleInterestEntry } from '../../shared/models/strategy.model';
 
-
 @Component({
   selector: 'app-simple-interest',
   standalone: true,
@@ -38,35 +37,25 @@ export class SimpleInterestComponent implements OnInit {
   }
 
   simulateSimpleInterest(): void {
-    let currentBet: number = this.initialAmount * 0.1; // 10% da banca inicial
-    const payoutPercent: number = this.payout / 100;
-
-    this.entries = [];
-
-    for (let i = 0; i < 3; i++) { // Supondo 3 rodadas para a estratégia de Juros Simples
-      const profit: number = currentBet * payoutPercent;
-      const totalAmount: number = currentBet + profit;
-
-      const entry: SimpleInterestEntry = { 
-        round: i + 1, 
-        bet: currentBet, 
-        profit, 
-        total: currentBet + profit,
-        win: undefined // Inicialmente indefinido
-      };
-      this.entries.push(entry);
-    }
+    this.strategyService.calculateStrategy<SimpleInterestEntry[]>('simple-interest', {
+      initialAmount: this.initialAmount,
+      payout: this.payout
+    }).subscribe(entries => {
+      this.entries = entries;
+    });
   }
 
   applyWin(index: number): void {
     const operation = this.entries[index];
-    this.strategyService.processWin(operation.bet, this.payout);
-    operation.win = true; // Marca como Win
+    this.strategyService.processResult(operation.bet, this.payout, 'win').subscribe(() => {
+      operation.win = true;
+    });
   }
 
   applyLoss(index: number): void {
     const operation = this.entries[index];
-    this.strategyService.processLoss(operation.bet);
-    operation.win = false; // Marca como Loss
+    this.strategyService.processResult(operation.bet, 0, 'loss').subscribe(() => {
+      operation.win = false;
+    });
   }
 }

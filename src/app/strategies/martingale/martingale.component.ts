@@ -5,6 +5,7 @@ import { OperationService } from '../../shared/services/operation.service';
 import { StrategyService } from '../../shared/services/strategy.service';
 import { DailyOperationsComponent } from '../../system/operations/daily-operations/daily-operations.component';
 import { MartingaleEntry } from '../../shared/models/operation.model';  // Importando a interface centralizada
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-martingale',
@@ -37,9 +38,18 @@ export class MartingaleComponent implements OnInit {
   }
 
   simulateMartingale(): void {
-    this.strategyService.calculateMartingale(this.initialAmount, this.payout)
-      .subscribe(result => {
-        this.createEntries(result);
+    const params = { initialAmount: this.initialAmount, payoutPercent: this.payout };
+    this.strategyService.calculateStrategy<number>('martingale', params)
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao calcular Martingale:', error);
+          return of(null); // Retorne um valor padrão ou null
+        })
+      )
+      .subscribe((result: number | null) => {
+        if (result !== null) {
+          this.createEntries(result);
+        }
       });
   }
 
@@ -65,7 +75,7 @@ export class MartingaleComponent implements OnInit {
 
   markWin(index: number): void {
     const operation = this.entries[index];
-    this.strategyService.processWin(operation.bet, this.payout).subscribe(() => {
+    this.strategyService.processResult(operation.bet, this.payout, 'win').subscribe(() => {
       operation.win = true;
       operation.profit = operation.bet * (this.payout / 100);
       operation.total += operation.profit;
@@ -74,7 +84,7 @@ export class MartingaleComponent implements OnInit {
 
   markLoss(index: number): void {
     const operation = this.entries[index];
-    this.strategyService.processLoss(operation.bet).subscribe(() => {
+    this.strategyService.processResult(operation.bet, 0, 'loss').subscribe(() => {
       operation.win = false;
       operation.profit = -operation.bet;
       operation.total += operation.profit;

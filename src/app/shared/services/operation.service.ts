@@ -9,7 +9,7 @@ export class OperationService {
   private initialBalanceSubject = new BehaviorSubject<number>(0);
   private currentBalanceSubject = new BehaviorSubject<number>(0);
   private riskAmountSubject = new BehaviorSubject<number>(0);
-  private payoutSubject = new BehaviorSubject<number>(80); // Valor padrão de payout
+  private payoutSubject = new BehaviorSubject<number>(80);
 
   get operations$(): Observable<number[]> {
     return this.operationsSubject.asObservable();
