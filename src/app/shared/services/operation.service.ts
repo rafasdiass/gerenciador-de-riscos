@@ -31,30 +31,28 @@ export class OperationService {
     return this.payoutSubject.asObservable();
   }
 
-  updateOperations(operation: number): void {
-    const currentOperations = this.operationsSubject.getValue();
-    currentOperations.push(operation);
-    this.operationsSubject.next(currentOperations);
+  addOperation(operation: number): void {
+    const updatedOperations = [...this.operationsSubject.getValue(), operation];
+    this.operationsSubject.next(updatedOperations);
     this.updateCurrentBalance();
   }
 
-  updateInitialBalance(balance: number): void {
+  setInitialBalance(balance: number): void {
     this.initialBalanceSubject.next(balance);
     this.updateCurrentBalance();
   }
 
-  updateRiskAmount(amount: number): void {
+  setRiskAmount(amount: number): void {
     this.riskAmountSubject.next(amount);
   }
 
-  updatePayout(payout: number): void {
+  setPayout(payout: number): void {
     this.payoutSubject.next(payout);
   }
 
   private updateCurrentBalance(): void {
-    const operations = this.operationsSubject.getValue();
+    const operationsTotal = this.operationsSubject.getValue().reduce((acc, operation) => acc + operation, 0);
     const initialBalance = this.initialBalanceSubject.getValue();
-    const totalOperations = operations.reduce((acc, val) => acc + val, 0);
-    this.currentBalanceSubject.next(initialBalance + totalOperations);
+    this.currentBalanceSubject.next(initialBalance + operationsTotal);
   }
 }

@@ -22,7 +22,6 @@ export class DailyOperationsComponent implements OnInit {
   payout!: number;
 
   constructor(
-    private strategyService: StrategyService,
     private operationService: OperationService
   ) {}
 
@@ -37,7 +36,7 @@ export class DailyOperationsComponent implements OnInit {
 
   initializeOperations(): void {
     if (this.operations.length === 0) {
-      this.operations = Array.from({ length: 3 }, () => ({ // Padrão para 3 operações
+      this.operations = Array.from({ length: 3 }, () => ({
         bet: 0,
         profit: 0,
         total: 0
@@ -46,14 +45,25 @@ export class DailyOperationsComponent implements OnInit {
   }
 
   markWin(index: number): void {
-    const operation = this.operations[index];
-    this.strategyService.processWin(operation.bet, this.payout); // Passa o bet e o payout
-    this.operations[index].win = true;
+    if (this.operations[index]) {
+      this.operations[index].win = true;
+      this.updateOperationResult(index, true);
+    }
   }
 
   markLoss(index: number): void {
+    if (this.operations[index]) {
+      this.operations[index].win = false;
+      this.updateOperationResult(index, false);
+    }
+  }
+
+  private updateOperationResult(index: number, isWin: boolean): void {
     const operation = this.operations[index];
-    this.strategyService.processLoss(operation.bet); // Passa o bet
-    this.operations[index].win = false;
+    const result = isWin 
+      ? operation.bet * (this.payout / 100)
+      : -operation.bet;
+    operation.profit = result;
+    operation.total += result;
   }
 }

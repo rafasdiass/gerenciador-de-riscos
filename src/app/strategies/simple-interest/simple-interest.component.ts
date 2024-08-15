@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OperationService } from '../../shared/services/operation.service';
+import { StrategyService } from '../../shared/services/strategy.service';
 import { DailyOperationsComponent } from '../../system/operations/daily-operations/daily-operations.component';
 import { SimpleInterestEntry } from '../../shared/models/strategy.model';
 
@@ -18,7 +19,7 @@ export class SimpleInterestComponent implements OnInit {
   payout!: number;
   entries: SimpleInterestEntry[] = [];
 
-  constructor(private operationService: OperationService) {}
+  constructor(private operationService: OperationService, private strategyService: StrategyService) {}
 
   ngOnInit(): void {
     this.loadSettings();
@@ -59,13 +60,13 @@ export class SimpleInterestComponent implements OnInit {
 
   applyWin(index: number): void {
     const operation = this.entries[index];
-    this.operationService.updateOperations(operation.profit); // Adiciona o lucro ao saldo
+    this.strategyService.processWin(operation.bet, this.payout);
     operation.win = true; // Marca como Win
   }
 
   applyLoss(index: number): void {
     const operation = this.entries[index];
-    this.operationService.updateOperations(-operation.bet); // Subtrai o valor da aposta do saldo
+    this.strategyService.processLoss(operation.bet);
     operation.win = false; // Marca como Loss
   }
 }

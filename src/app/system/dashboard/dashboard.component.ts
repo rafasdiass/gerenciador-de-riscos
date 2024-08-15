@@ -38,20 +38,20 @@ export class DashboardComponent implements OnInit {
         const totalOperations = operations.reduce((acc, val) => acc + val, 0);
         this.currentBalance = initialBalance + totalOperations;
         this.updateBalanceColor();
-        this.growth = operations.length > 0 ? (this.currentBalance - initialBalance) / initialBalance : 0;
+        this.growth = this.calculateGrowth(initialBalance, this.currentBalance, operations.length);
       })
     ).subscribe();
   }
 
   updateInitialBalance(): void {
-    this.operationService.updateInitialBalance(this.initialBalance);
+    this.operationService.setInitialBalance(this.initialBalance);
     this.updateRiskAmount(); // Recalcula o valor arriscado baseado no novo saldo
     this.updateBalanceColor();
   }
 
   updateRiskAmount(): void {
     const riskAmount = (this.initialBalance * this.riskPercentage) / 100;
-    this.operationService.updateRiskAmount(riskAmount); // Atualiza o valor a ser arriscado
+    this.operationService.setRiskAmount(riskAmount); // Atualiza o valor a ser arriscado
   }
 
   saveSettings(): void {
@@ -73,7 +73,11 @@ export class DashboardComponent implements OnInit {
     this.updateInitialBalance();
   }
 
-  updateBalanceColor(): void {
+  private calculateGrowth(initialBalance: number, currentBalance: number, operationCount: number): number {
+    return operationCount > 0 ? (currentBalance - initialBalance) / initialBalance : 0;
+  }
+
+  private updateBalanceColor(): void {
     if (this.currentBalance > this.initialBalance) {
       this.balanceColor = 'text-success';
       this.balanceIcon = 'bi-arrow-up-circle-fill';

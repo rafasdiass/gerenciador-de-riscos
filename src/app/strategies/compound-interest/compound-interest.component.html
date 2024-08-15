@@ -1,46 +1,26 @@
-<div class="container mt-4">
-    <div class="page-title-container mb-4 text-center">
-      <h2 class="page-title">Juros Compostos</h2>
-    </div>
+<div class="compound-interest-container">
+  <h2>Cálculo de Juros Compostos</h2>
   
-    <div class="card shadow-sm border-0">
-      <div class="card-header bg-primary text-white d-flex align-items-center">
-        <i class="bi bi-calculator me-2"></i>
-        <h5 class="mb-0">Cálculo de Juros Compostos</h5>
-      </div>
-      <div class="card-body bg-light">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Rodada</th>
-              <th>Aposta (R$)</th>
-              <th>Lucro (R$)</th>
-              <th>Total (R$)</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let entry of entries; let i = index">
-              <td>{{ entry.round }}</td>
-              <td>{{ entry.bet | currency:'BRL' }}</td>
-              <td>{{ entry.profit | currency:'BRL' }}</td>
-              <td>{{ entry.total | currency:'BRL' }}</td>
-              <td>
-                <button 
-                  class="btn btn-success btn-sm" 
-                  (click)="applyWin(i)">
-                  <i class="bi bi-check-circle"></i> Win
-                </button>
-                <button 
-                  class="btn btn-danger btn-sm ms-2" 
-                  (click)="applyLoss(i)">
-                  <i class="bi bi-x-circle"></i> Loss
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <form (ngSubmit)="calculate()">
+    <div class="form-group">
+      <label for="initialAmount">Valor Inicial:</label>
+      <input type="number" id="initialAmount" [value]="initialAmount" class="form-control" readonly />
     </div>
+
+    <div class="form-group">
+      <label for="interestRate">Taxa de Juros (%):</label>
+      <input type="number" id="interestRate" [(ngModel)]="interestRate" name="interestRate" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label for="periods">Períodos:</label>
+      <input type="number" id="periods" [(ngModel)]="periods" name="periods" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Calcular</button>
+  </form>
+
+  <div *ngIf="finalAmount !== undefined" class="result-container">
+    <h3>Valor Final: {{ finalAmount | currency }}</h3>
   </div>
-  
+</div>
