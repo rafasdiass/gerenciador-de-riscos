@@ -32,6 +32,10 @@
             />
           </div>
           <div class="mb-3">
+            <label for="riskAmount" class="form-label">Valor a Arriscar (R$)</label>
+            <p class="form-control-plaintext">{{ riskAmount | currency:'BRL' }}</p>
+          </div>
+          <div class="mb-3">
             <label for="payout" class="form-label">Payout (%)</label>
             <input
               type="number"

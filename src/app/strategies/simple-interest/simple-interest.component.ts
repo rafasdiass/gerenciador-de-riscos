@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OperationService } from '../../shared/services/operation.service';
 import { StrategyService } from '../../shared/services/strategy.service';
-import { DailyOperationsComponent } from '../../system/operations/daily-operations/daily-operations.component';
+import { DailyOperationsComponent } from '../../pages/operations/daily-operations/daily-operations.component';
 import { SimpleInterestEntry } from '../../shared/models/strategy.model';
 import { catchError, of } from 'rxjs';
 import { Strategy } from '../../shared/models/strategy.model';

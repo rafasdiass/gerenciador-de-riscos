@@ -1,6 +1,10 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Strategy } from '../../models/strategy.model';
+import { MartingaleComponent } from '../../../strategies/martingale/martingale.component';
+import { CompoundInterestComponent } from '../../../strategies/compound-interest/compound-interest.component';
+import { CustomStrategyComponent } from '../../../strategies/custom-strategy/custom-strategy.component';
 
 @Component({
   selector: 'app-strategy-selector',
@@ -10,12 +14,12 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./strategy-selector.component.scss']
 })
 export class StrategySelectorComponent implements OnInit {
-  @Output() strategyChange = new EventEmitter<{ name: string }>();
+  @Output() strategyChange = new EventEmitter<Strategy>();
 
-  strategies = [
-    { name: 'Martingale' },
-    { name: 'Juros Compostos' },
-    { name: 'Estratégia Personalizada' }
+  strategies: Strategy[] = [
+    { name: 'Martingale', component: MartingaleComponent },
+    { name: 'Juros Compostos', component: CompoundInterestComponent },
+    { name: 'Estratégia Personalizada', component: CustomStrategyComponent }
   ];
 
   ngOnInit(): void {

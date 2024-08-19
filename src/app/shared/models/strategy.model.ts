@@ -11,5 +11,5 @@ export interface SimpleInterestEntry {
   bet: number;
   profit: number;
   total: number;
-  win?: boolean; // Adicionando a propriedade win
+  win?: boolean;  // A propriedade win é opcional, indicando se a operação foi uma vitória
 }

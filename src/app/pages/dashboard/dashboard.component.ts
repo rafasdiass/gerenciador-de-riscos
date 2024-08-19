@@ -14,10 +14,11 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule]
 })
 export class DashboardComponent implements OnInit {
-  initialBalance!: number;
-  riskPercentage!: number;
-  payout!: number;
-  currentBalance!: number;
+  initialBalance: number = 0;
+  riskPercentage: number = 0;
+  riskAmount: number = 0;  // Adicionei esta propriedade para corrigir o erro
+  payout: number = 80;
+  currentBalance: number = 0;
   growth: number = 0;
   balanceColor: string = 'text-dark';
   balanceIcon: string = '';
@@ -50,8 +51,8 @@ export class DashboardComponent implements OnInit {
   }
 
   updateRiskAmount(): void {
-    const riskAmount = this.calculateRiskAmount();
-    this.operationService.setRiskAmount(riskAmount);
+    this.riskAmount = this.calculateRiskAmount();  // Corrigido para usar a propriedade correta
+    this.operationService.setRiskAmount(this.riskAmount);
   }
 
   saveSettings(): void {

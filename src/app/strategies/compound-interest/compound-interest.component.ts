@@ -17,7 +17,6 @@ export class CompoundInterestComponent implements OnInit {
   initialAmount!: number;
   interestRate!: number;
   periods!: number;
-  finalAmounts: number[] = [];  // Lista para armazenar os valores retornados do backend
 
   constructor(
     private strategyService: StrategyService,
@@ -75,7 +74,8 @@ export class CompoundInterestComponent implements OnInit {
         })
       )
       .subscribe(results => {
-        this.finalAmounts = this.flattenResults(results); // Armazena a lista de valores retornados
+        const finalAmounts = this.flattenResults(results);
+        this.operationService.setOperations(finalAmounts); // Correção: usar setOperations para armazenar os resultados
       });
   }
 

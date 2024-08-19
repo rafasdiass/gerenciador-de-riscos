@@ -1,9 +1,9 @@
 <div class="container mt-4">
   <div class="page-title-container mb-4 text-center">
-    <h2 class="page-title">Cálculo de Juros Compostos</h2>
+    <h2 class="page-title">Configurações de Juros Compostos</h2>
   </div>
 
-  <!-- Exibe os valores calculados -->
+  <!-- Exibe as configurações da estratégia -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-header bg-primary text-white d-flex align-items-center">
       <i class="bi bi-gear-fill me-2"></i>
@@ -27,7 +27,5 @@
     </div>
   </div>
 
-  <div *ngIf="finalAmount !== undefined" class="result-container mt-4 text-center">
-    <h3>Valor Final: {{ finalAmount | currency:'BRL' }}</h3>
-  </div>
+ 
 </div>

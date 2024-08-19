@@ -19,6 +19,10 @@ export class OperationService {
     return this.operationsSubject.asObservable();
   }
 
+  setOperations(operations: number[]): void {
+    this.operationsSubject.next(operations);
+  }
+
   get initialBalance$(): Observable<number> {
     return this.initialBalanceSubject.asObservable();
   }
@@ -48,17 +52,24 @@ export class OperationService {
     this.payoutSubject.next(payout);
   }
 
-  sendSettingsToStrategy(strategy: Strategy): void {
+  calculateAndSetOperations(strategy: Strategy): void {
     const parameters = this.buildParameters();
-    this.strategyService.calculateStrategy<number[]>(strategy, parameters).subscribe(result => {
-      this.handleResult(result);
-      this.updateCurrentBalance();
+    this.strategyService.calculateStrategy<number[]>(strategy, parameters).subscribe({
+      next: (result) => {
+        this.handleResult(result);
+        this.updateCurrentBalance();
+      },
+      error: (err) => {
+        console.error('Erro ao calcular a estratégia:', err);
+        this.operationsSubject.next([]); // Resetar as operações em caso de erro
+      }
     });
   }
 
   private buildParameters(): any {
     return {
       initialAmount: this.initialBalanceSubject.getValue(),
+      riskAmount: this.riskAmountSubject.getValue(),
       payoutPercent: this.payoutSubject.getValue(),
     };
   }
@@ -66,7 +77,7 @@ export class OperationService {
   private handleResult(result: number[] | number[][]): void {
     const flatResult = this.flattenArray(result);
     if (this.isValidResult(flatResult)) {
-      this.operationsSubject.next(flatResult);
+      this.setOperations(flatResult); // Aqui chamamos setOperations para atualizar as operações
     } else {
       console.error('Resultado inválido:', result);
     }

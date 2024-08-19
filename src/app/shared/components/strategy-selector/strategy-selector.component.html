@@ -1,7 +1,9 @@
 <div class="container mt-4">
   <div class="card p-4 shadow-sm">
     <div class="form-group">
-      <label for="strategy" class="form-label">Selecione uma Estratégia:</label>
+      <label for="strategy" class="form-label">
+        <i class="bi bi-gear-fill me-2"></i> Selecione uma Estratégia:
+      </label>
       <select id="strategy" class="form-select" (change)="selectStrategy($event)">
         <option *ngFor="let strategy of strategies" [value]="strategy.name">
           {{ strategy.name }}

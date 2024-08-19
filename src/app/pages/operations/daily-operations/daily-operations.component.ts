@@ -86,7 +86,7 @@ export class DailyOperationsComponent implements OnInit {
     this.strategyService.processResult(operation.bet, payout, result)
       .subscribe({
         next: (updatedOperation) => {
-          if (updatedOperation !== undefined && updatedOperation !== null) { // Verificação explícita
+          if (updatedOperation !== undefined && updatedOperation !== null) {
             this.updateOperationResult(index, updatedOperation);
           }
         },
@@ -96,7 +96,6 @@ export class DailyOperationsComponent implements OnInit {
       });
   }
   
-
   private updateOperationResult(index: number, updatedOperation: Partial<Operation>): void {
     this.operations[index] = { ...this.operations[index], ...updatedOperation };
   }
