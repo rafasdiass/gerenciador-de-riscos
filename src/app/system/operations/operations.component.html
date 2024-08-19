@@ -2,11 +2,6 @@
   <!-- Seletor de estratégia -->
   <app-strategy-selector (strategyChange)="onStrategySelected($event)"></app-strategy-selector>
 
-  <!-- Renderização dinâmica do componente da estratégia selecionada -->
-  <div class="strategy-container" *ngIf="selectedStrategyComponent">
-    <ng-container *ngComponentOutlet="selectedStrategyComponent"></ng-container>
-  </div>
-
   <!-- Operações diárias -->
-  <app-daily-operations></app-daily-operations>
+  <app-daily-operations [selectedStrategy]="selectedStrategyName"></app-daily-operations>
 </div>

@@ -5,6 +5,8 @@ import { OperationService } from '../../shared/services/operation.service';
 import { StrategyService } from '../../shared/services/strategy.service';
 import { DailyOperationsComponent } from '../../system/operations/daily-operations/daily-operations.component';
 import { SimpleInterestEntry } from '../../shared/models/strategy.model';
+import { catchError, of } from 'rxjs';
+import { Strategy } from '../../shared/models/strategy.model';
 
 @Component({
   selector: 'app-simple-interest',
@@ -18,44 +20,91 @@ export class SimpleInterestComponent implements OnInit {
   payout!: number;
   entries: SimpleInterestEntry[] = [];
 
-  constructor(private operationService: OperationService, private strategyService: StrategyService) {}
+  constructor(
+    private operationService: OperationService,
+    private strategyService: StrategyService
+  ) {}
 
   ngOnInit(): void {
-    this.loadSettings();
+    this.loadSettingsAndCalculate();
   }
 
-  loadSettings(): void {
+  private loadSettingsAndCalculate(): void {
     this.operationService.initialBalance$.subscribe(balance => {
       this.initialAmount = balance;
-      this.simulateSimpleInterest();
+      this.trySimulateSimpleInterest();
     });
 
     this.operationService.payout$.subscribe(payout => {
       this.payout = payout;
-      this.simulateSimpleInterest();
+      this.trySimulateSimpleInterest();
     });
   }
 
-  simulateSimpleInterest(): void {
-    this.strategyService.calculateStrategy<SimpleInterestEntry[]>('simple-interest', {
+  private trySimulateSimpleInterest(): void {
+    if (this.isValidSettings()) {
+      this.simulateSimpleInterest();
+    }
+  }
+
+  private isValidSettings(): boolean {
+    return this.initialAmount > 0 && this.payout > 0;
+  }
+
+  private simulateSimpleInterest(): void {
+    const strategy: Strategy = {
+      name: 'simple-interest',
+      component: SimpleInterestComponent,
+    };
+
+    const params = {
       initialAmount: this.initialAmount,
       payout: this.payout
-    }).subscribe(entries => {
-      this.entries = entries;
-    });
+    };
+
+    this.strategyService.calculateStrategy<SimpleInterestEntry[]>(strategy, params)
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao calcular Juros Simples:', error);
+          return of([] as SimpleInterestEntry[]);
+        })
+      )
+      .subscribe(entries => {
+        this.entries = this.flattenEntries(entries);
+      });
+  }
+
+  private flattenEntries(entries: SimpleInterestEntry[][] | SimpleInterestEntry[]): SimpleInterestEntry[] {
+    return Array.isArray(entries[0]) ? (entries as SimpleInterestEntry[][]).flat() : entries as SimpleInterestEntry[];
   }
 
   applyWin(index: number): void {
-    const operation = this.entries[index];
-    this.strategyService.processResult(operation.bet, this.payout, 'win').subscribe(() => {
-      operation.win = true;
-    });
+    this.processResult(index, 'win');
   }
 
   applyLoss(index: number): void {
-    const operation = this.entries[index];
-    this.strategyService.processResult(operation.bet, 0, 'loss').subscribe(() => {
-      operation.win = false;
-    });
+    this.processResult(index, 'loss');
+  }
+
+  private processResult(index: number, result: 'win' | 'loss'): void {
+    const entry = this.entries[index];
+    const payout = result === 'win' ? this.payout : 0;
+
+    this.strategyService.processResult(entry.bet, payout, result)
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao processar o resultado:', error);
+          return of(undefined);
+        })
+      )
+      .subscribe((updatedEntry: void | Partial<SimpleInterestEntry>) => {
+        if (updatedEntry) {
+          this.updateEntry(index, updatedEntry);
+        }
+      });
+  }
+
+  private updateEntry(index: number, updatedEntry: Partial<SimpleInterestEntry>): void {
+    this.entries[index] = { ...this.entries[index], ...updatedEntry };
   }
 }

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { Strategy } from '../models/strategy.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,25 +11,23 @@ export class StrategyService {
 
   constructor(private apiService: ApiService) {}
 
-  /**
-   * Método genérico para calcular uma estratégia baseada nos parâmetros fornecidos.
-   * @param strategyName - Nome da estratégia (ex: 'martingale', 'compound-interest', etc.)
-   * @param parameters - Objeto contendo os parâmetros da estratégia
-   * @returns - Observable com o resultado do cálculo
-   */
-  calculateStrategy<T>(strategyName: string, parameters: any): Observable<T> {
-    return this.apiService.post<T>(`strategy/${strategyName}`, parameters);
+  calculateStrategy<T>(strategy: Strategy, parameters: any): Observable<T[]> {
+    return this.apiService.post<T[]>(`strategy/${strategy.name}`, parameters).pipe(
+      map(response => Array.isArray(response) ? response : [response]),
+      catchError(error => {
+        console.error('Erro ao calcular a estratégia:', error);
+        return of([]);  // Retorna um array vazio em caso de erro
+      })
+    );
   }
 
-  /**
-   * Método genérico para processar um resultado (win/loss).
-   * @param bet - Valor da aposta
-   * @param payout - Percentual de payout
-   * @param result - Resultado ('win' ou 'loss')
-   * @returns - Observable vazio
-   */
   processResult(bet: number, payout: number = 0, result: 'win' | 'loss'): Observable<void> {
     const data = { bet, payout, result };
-    return this.apiService.post<void>('strategy/process-result', data);
+    return this.apiService.post<void>('strategy/process-result', data).pipe(
+      catchError(error => {
+        console.error('Erro ao processar o resultado:', error);
+        return of();  // Retorna um observable vazio em caso de erro
+      })
+    );
   }
 }

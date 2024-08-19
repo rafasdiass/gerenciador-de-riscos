@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { StrategyService } from './strategy.service';
+import { Strategy } from '../models/strategy.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,8 @@ export class OperationService {
   private currentBalanceSubject = new BehaviorSubject<number>(0);
   private riskAmountSubject = new BehaviorSubject<number>(0);
   private payoutSubject = new BehaviorSubject<number>(80);
+
+  constructor(private strategyService: StrategyService) {}
 
   get operations$(): Observable<number[]> {
     return this.operationsSubject.asObservable();
@@ -31,12 +35,6 @@ export class OperationService {
     return this.payoutSubject.asObservable();
   }
 
-  addOperation(operation: number): void {
-    const updatedOperations = [...this.operationsSubject.getValue(), operation];
-    this.operationsSubject.next(updatedOperations);
-    this.updateCurrentBalance();
-  }
-
   setInitialBalance(balance: number): void {
     this.initialBalanceSubject.next(balance);
     this.updateCurrentBalance();
@@ -48,6 +46,38 @@ export class OperationService {
 
   setPayout(payout: number): void {
     this.payoutSubject.next(payout);
+  }
+
+  sendSettingsToStrategy(strategy: Strategy): void {
+    const parameters = this.buildParameters();
+    this.strategyService.calculateStrategy<number[]>(strategy, parameters).subscribe(result => {
+      this.handleResult(result);
+      this.updateCurrentBalance();
+    });
+  }
+
+  private buildParameters(): any {
+    return {
+      initialAmount: this.initialBalanceSubject.getValue(),
+      payoutPercent: this.payoutSubject.getValue(),
+    };
+  }
+
+  private handleResult(result: number[] | number[][]): void {
+    const flatResult = this.flattenArray(result);
+    if (this.isValidResult(flatResult)) {
+      this.operationsSubject.next(flatResult);
+    } else {
+      console.error('Resultado inválido:', result);
+    }
+  }
+
+  private flattenArray(result: number[] | number[][]): number[] {
+    return Array.isArray(result[0]) ? (result as number[][]).flat() : result as number[];
+  }
+
+  private isValidResult(result: any): result is number[] {
+    return Array.isArray(result) && result.every(item => typeof item === 'number');
   }
 
   private updateCurrentBalance(): void {

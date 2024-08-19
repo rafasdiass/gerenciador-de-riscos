@@ -10,18 +10,20 @@
         <span>Aposta: {{ operation.bet | currency:'BRL' }}</span>
         <span>Lucro: {{ operation.profit | currency:'BRL' }}</span>
         <span>Total: {{ operation.total | currency:'BRL' }}</span>
-        <button 
-          class="btn btn-success btn-sm" 
-          (click)="markWin(i)"
-          [disabled]="operation.win !== undefined">
-          <i class="bi bi-check-circle"></i> Win
-        </button>
-        <button 
-          class="btn btn-danger btn-sm ms-2" 
-          (click)="markLoss(i)"
-          [disabled]="operation.win !== undefined">
-          <i class="bi bi-x-circle"></i> Loss
-        </button>
+        <div>
+          <button 
+            class="btn btn-success btn-sm" 
+            (click)="markWin(i)"
+            [disabled]="operation.win !== undefined">
+            <i class="bi bi-check-circle"></i> Win
+          </button>
+          <button 
+            class="btn btn-danger btn-sm ms-2" 
+            (click)="markLoss(i)"
+            [disabled]="operation.win !== undefined">
+            <i class="bi bi-x-circle"></i> Loss
+          </button>
+        </div>
       </div>
     </div>
   </div>

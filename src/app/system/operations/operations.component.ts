@@ -17,13 +17,11 @@ import { DailyOperationsComponent } from './daily-operations/daily-operations.co
   styleUrls: ['./operations.component.scss']
 })
 export class OperationsComponent implements OnInit {
-  selectedStrategyComponent!: any;
+  selectedStrategyName: string = 'Martingale'; // Definir estratégia padrão como "Martingale"
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 
-  onStrategySelected(strategyComponent: any): void {
-    this.selectedStrategyComponent = strategyComponent;
+  onStrategySelected(strategy: { name: string }): void {
+    this.selectedStrategyName = strategy.name;
   }
 }

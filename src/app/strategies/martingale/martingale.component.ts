@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OperationService } from '../../shared/services/operation.service';
 import { StrategyService } from '../../shared/services/strategy.service';
-import { DailyOperationsComponent } from '../../system/operations/daily-operations/daily-operations.component';
-import { MartingaleEntry } from '../../shared/models/operation.model';  // Importando a interface centralizada
+import { MartingaleEntry } from '../../shared/models/operation.model';
 import { catchError, of } from 'rxjs';
+import { Strategy } from '../../shared/models/strategy.model';
 
 @Component({
   selector: 'app-martingale',
   standalone: true,
-  imports: [CommonModule, FormsModule, DailyOperationsComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './martingale.component.html',
   styleUrls: ['./martingale.component.scss']
 })
@@ -19,75 +19,88 @@ export class MartingaleComponent implements OnInit {
   payout!: number;
   entries: MartingaleEntry[] = [];
 
-  constructor(private operationService: OperationService, private strategyService: StrategyService) {}
+  constructor(
+    private operationService: OperationService,
+    private strategyService: StrategyService
+  ) {}
 
   ngOnInit(): void {
-    this.loadSettings();
+    this.loadSettingsAndCalculate();
   }
 
-  loadSettings(): void {
+  private loadSettingsAndCalculate(): void {
     this.operationService.initialBalance$.subscribe(balance => {
       this.initialAmount = balance;
-      this.simulateMartingale();
+      this.trySimulateMartingale();
     });
 
     this.operationService.payout$.subscribe(payout => {
       this.payout = payout;
-      this.simulateMartingale();
+      this.trySimulateMartingale();
     });
   }
 
-  simulateMartingale(): void {
+  private trySimulateMartingale(): void {
+    if (this.isValidSettings()) {
+      this.simulateMartingale();
+    }
+  }
+
+  private isValidSettings(): boolean {
+    return this.initialAmount > 0 && this.payout > 0;
+  }
+
+  private simulateMartingale(): void {
+    const strategy: Strategy = {
+      name: 'martingale',
+      component: MartingaleComponent,
+    };
+
     const params = { initialAmount: this.initialAmount, payoutPercent: this.payout };
-    this.strategyService.calculateStrategy<number>('martingale', params)
+
+    this.strategyService.calculateStrategy<MartingaleEntry[]>(strategy, params)
       .pipe(
         catchError(error => {
           console.error('Erro ao calcular Martingale:', error);
-          return of(null); // Retorne um valor padrão ou null
+          return of([] as MartingaleEntry[]);
         })
       )
-      .subscribe((result: number | null) => {
-        if (result !== null) {
-          this.createEntries(result);
+      .subscribe(result => {
+        this.entries = this.flattenEntries(result);
+      });
+  }
+
+  private flattenEntries(result: MartingaleEntry[][] | MartingaleEntry[]): MartingaleEntry[] {
+    return Array.isArray(result[0]) ? (result as MartingaleEntry[][]).flat() : result as MartingaleEntry[];
+  }
+
+  markWin(index: number): void {
+    this.processResult(index, 'win');
+  }
+
+  markLoss(index: number): void {
+    this.processResult(index, 'loss');
+  }
+
+  private processResult(index: number, result: 'win' | 'loss'): void {
+    const entry = this.entries[index];
+    const payout = result === 'win' ? this.payout : 0;
+
+    this.strategyService.processResult(entry.bet, payout, result)
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao processar o resultado:', error);
+          return of(undefined);
+        })
+      )
+      .subscribe((updatedEntry: void | Partial<MartingaleEntry>) => {
+        if (updatedEntry) {
+          this.updateEntry(index, updatedEntry);
         }
       });
   }
 
-  private createEntries(initialBet: number): void {
-    let currentBet = initialBet;
-    const payoutPercent = this.payout / 100;
-
-    this.entries = Array.from({ length: 3 }, (_, i) => {
-      const profit = currentBet * payoutPercent;
-      const total = currentBet + profit;
-
-      const entry: MartingaleEntry = {
-        round: i + 1,
-        bet: currentBet,
-        profit,
-        total
-      };
-
-      currentBet *= 2; // Dobra a aposta a cada rodada
-      return entry;
-    });
-  }
-
-  markWin(index: number): void {
-    const operation = this.entries[index];
-    this.strategyService.processResult(operation.bet, this.payout, 'win').subscribe(() => {
-      operation.win = true;
-      operation.profit = operation.bet * (this.payout / 100);
-      operation.total += operation.profit;
-    });
-  }
-
-  markLoss(index: number): void {
-    const operation = this.entries[index];
-    this.strategyService.processResult(operation.bet, 0, 'loss').subscribe(() => {
-      operation.win = false;
-      operation.profit = -operation.bet;
-      operation.total += operation.profit;
-    });
+  private updateEntry(index: number, updatedEntry: Partial<MartingaleEntry>): void {
+    this.entries[index] = { ...this.entries[index], ...updatedEntry };
   }
 }

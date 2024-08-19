@@ -10,13 +10,11 @@ export interface MartingaleEntry extends Operation {
   round: number;  // Número da rodada no sistema Martingale
 }
 
-// Você pode adicionar outras interfaces para outras estratégias ou modelos específicos
 export interface CompoundInterestEntry extends Operation {
   periods: number;  // Número de períodos de aplicação do juros composto
   interestRate: number;  // Taxa de juros aplicada
 }
 
-// Interface para uma estratégia customizada, que pode variar conforme o uso
 export interface CustomStrategyEntry extends Operation {
   strategyName: string;  // Nome da estratégia customizada
   parameters: any;  // Parâmetros adicionais específicos para essa estratégia

@@ -1,9 +1,6 @@
-import { Component, EventEmitter, OnInit, Output, Type } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MartingaleComponent } from '../../../strategies/martingale/martingale.component';
-import { CompoundInterestComponent } from '../../../strategies/compound-interest/compound-interest.component';
-import { CustomStrategyComponent } from '../../../strategies/custom-strategy/custom-strategy.component';
 
 @Component({
   selector: 'app-strategy-selector',
@@ -13,27 +10,27 @@ import { CustomStrategyComponent } from '../../../strategies/custom-strategy/cus
   styleUrls: ['./strategy-selector.component.scss']
 })
 export class StrategySelectorComponent implements OnInit {
-  @Output() strategyChange = new EventEmitter<Type<any>>();
+  @Output() strategyChange = new EventEmitter<{ name: string }>();
 
   strategies = [
-    { name: 'Martingale', component: MartingaleComponent },
-    { name: 'Juros Compostos', component: CompoundInterestComponent },
-    { name: 'Estratégia Personalizada', component: CustomStrategyComponent }
+    { name: 'Martingale' },
+    { name: 'Juros Compostos' },
+    { name: 'Estratégia Personalizada' }
   ];
 
   ngOnInit(): void {
-    this.emitDefaultStrategy(); // Emite a estratégia padrão ao iniciar
+    this.emitDefaultStrategy(); // Emitir a estratégia padrão ao iniciar
   }
 
   emitDefaultStrategy(): void {
-    this.strategyChange.emit(this.strategies[0].component); // Martingale como padrão
+    this.strategyChange.emit(this.strategies[0]); // Emitir "Martingale" como padrão
   }
 
   selectStrategy(event: Event): void {
     const target = event.target as HTMLSelectElement;
-    const selectedStrategy = this.strategies.find(strategy => strategy.name === target.value)?.component;
+    const selectedStrategy = this.strategies.find(strategy => strategy.name === target.value);
     if (selectedStrategy) {
-      this.strategyChange.emit(selectedStrategy); // Emite o componente da estratégia selecionada
+      this.strategyChange.emit(selectedStrategy); // Emitir a estratégia selecionada como objeto
     }
   }
 }

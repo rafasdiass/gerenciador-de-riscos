@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
       this.operationService.operations$
     ]).pipe(
       map(([initialBalance, operations]) => {
-        const totalOperations = operations.reduce((acc, val) => acc + val, 0);
+        const totalOperations = this.calculateTotalOperations(operations);
         this.currentBalance = initialBalance + totalOperations;
         this.updateBalanceColor();
         this.growth = this.calculateGrowth(initialBalance, this.currentBalance, operations.length);
@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit {
   }
 
   updateRiskAmount(): void {
-    const riskAmount = (this.initialBalance * this.riskPercentage) / 100;
+    const riskAmount = this.calculateRiskAmount();
     this.operationService.setRiskAmount(riskAmount);
   }
 
@@ -62,13 +62,9 @@ export class DashboardComponent implements OnInit {
   }
 
   loadSettings(): void {
-    const savedInitialBalance = this.localStorageService.getItem('initialBalance');
-    const savedRiskPercentage = this.localStorageService.getItem('riskPercentage');
-    const savedPayout = this.localStorageService.getItem('payout');
-
-    this.initialBalance = savedInitialBalance ? parseFloat(savedInitialBalance) : 0;
-    this.riskPercentage = savedRiskPercentage ? parseFloat(savedRiskPercentage) : 0;
-    this.payout = savedPayout ? parseFloat(savedPayout) : 80;
+    this.initialBalance = this.getLocalStorageItem('initialBalance', 0);
+    this.riskPercentage = this.getLocalStorageItem('riskPercentage', 0);
+    this.payout = this.getLocalStorageItem('payout', 80);
 
     this.updateInitialBalance();
   }
@@ -77,16 +73,31 @@ export class DashboardComponent implements OnInit {
     return operationCount > 0 ? (currentBalance - initialBalance) / initialBalance : 0;
   }
 
+  private calculateTotalOperations(operations: number[]): number {
+    return operations.reduce((acc, val) => acc + val, 0);
+  }
+
+  private calculateRiskAmount(): number {
+    return (this.initialBalance * this.riskPercentage) / 100;
+  }
+
   private updateBalanceColor(): void {
     if (this.currentBalance > this.initialBalance) {
-      this.balanceColor = 'text-success';
-      this.balanceIcon = 'bi-arrow-up-circle-fill';
+      this.setBalanceAppearance('text-success', 'bi-arrow-up-circle-fill');
     } else if (this.currentBalance < this.initialBalance) {
-      this.balanceColor = 'text-danger';
-      this.balanceIcon = 'bi-arrow-down-circle-fill';
+      this.setBalanceAppearance('text-danger', 'bi-arrow-down-circle-fill');
     } else {
-      this.balanceColor = 'text-dark';
-      this.balanceIcon = '';
+      this.setBalanceAppearance('text-dark', '');
     }
+  }
+
+  private setBalanceAppearance(color: string, icon: string): void {
+    this.balanceColor = color;
+    this.balanceIcon = icon;
+  }
+
+  private getLocalStorageItem(key: string, defaultValue: number): number {
+    const value = this.localStorageService.getItem(key);
+    return value ? parseFloat(value) : defaultValue;
   }
 }
